@@ -28,15 +28,14 @@ static int justc_envdir (char const *path, stralloc *modifs)
   for (;;)
   {
     direntry *d ;
-    size_t len ;
     contents.len = 0 ;
     errno = 0 ;
     d = readdir(dir) ;
     if (!d) break ;
     if (d->d_name[0] == '.') continue ;
-    len = strlen(d->d_name) ;
-    if (str_chr(d->d_name, '=') < len) continue ;
+    if (strchr(d->d_name, '=')) continue ;
     {
+      size_t len = strlen(d->d_name) ;
       char tmp[pathlen + len + 2] ;
       memcpy(tmp, path, pathlen) ;
       tmp[pathlen] = '/' ;
