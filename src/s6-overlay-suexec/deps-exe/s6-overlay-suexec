@@ -1,3 +1,5 @@
 -lexecline
+${LIBNSSS}
 -lskarnet
 ${SPAWN_LIB}
+${MAYBEPTHREAD_LIB}

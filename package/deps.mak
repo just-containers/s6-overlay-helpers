@@ -7,5 +7,5 @@ src/s6-overlay-suexec/s6-overlay-suexec.o src/s6-overlay-suexec/s6-overlay-suexe
 
 justc-envdir: EXTRA_LIBS := -lskarnet
 justc-envdir: src/justc-envdir/justc-envdir.o
-s6-overlay-suexec: EXTRA_LIBS := -lexecline -lskarnet ${SPAWN_LIB}
-s6-overlay-suexec: src/s6-overlay-suexec/s6-overlay-suexec.o
+s6-overlay-suexec: EXTRA_LIBS := -lexecline -lskarnet ${SPAWN_LIB} ${MAYBEPTHREAD_LIB}
+s6-overlay-suexec: src/s6-overlay-suexec/s6-overlay-suexec.o ${LIBNSSS}

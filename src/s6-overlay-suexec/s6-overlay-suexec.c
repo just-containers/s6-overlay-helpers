@@ -2,6 +2,9 @@
 
 #include <unistd.h>
 #include <sys/wait.h>
+#include <pwd.h>
+#include <grp.h>
+#include <errno.h>
 
 #include <skalibs/types.h>
 #include <skalibs/strerr2.h>
@@ -13,12 +16,20 @@
 
 #define USAGE "s6-overlay-suexec { root_block... } normal_init..."
 
+#define MAXUSERLEN 64
+#define MAXGROUPLEN 64
+#define MAXLEN (UID_FMT + GID_FMT + MAXUSERLEN + MAXGROUPLEN + 63)
+
 int main (int argc, char const **argv, char const *const *envp)
 {
   pid_t pid ;
   uid_t uid ;
   gid_t gid ;
   int argc1, wstat ;
+  size_t len = env_len(envp) ;
+  size_t m = 12 ;
+  unsigned int n = 0 ;
+  char fmt[MAXLEN] = "GIDLIST\0GID=" ;
 
   PROG = "s6-overlay-suexec" ;
 
@@ -34,9 +45,6 @@ int main (int argc, char const **argv, char const *const *envp)
   argv[argc1] = 0 ;
   
   {
-    size_t len = env_len(envp) ;
-    size_t m = 12 ;
-    char fmt[UID_FMT + GID_FMT + 10] = "GIDLIST\0GID=" ;
     char const *v[len + 4] ;
     m += gid_fmt(fmt + m, gid) ;
     memcpy(fmt + m, "\0UID=", 5) ; m += 5 ;
@@ -44,8 +52,8 @@ int main (int argc, char const **argv, char const *const *envp)
     fmt[m++] = 0 ;
     if (!env_mergen(v, len + 4, envp, len, fmt, m, 3))
       strerr_diefu1sys(111, "merge environment") ;
-    if (gid) if (setgid(0) == -1) strerr_diefu2sys(111, "setgid to ", "root") ;
-    if (uid) if (setuid(0) == -1) strerr_diefu2sys(111, "setuid to ", "root") ;
+    if (gid) if (setgid(0) == -1) strerr_diefu4sys(111, "set", "g", "id to ", "root") ;
+    if (uid) if (setuid(0) == -1) strerr_diefu4sys(111, "set", "u", "id to ", "root") ;
     pid = el_spawn0(argv[0], argv, v) ;
     if (!pid) strerr_diefu2sys(111, "spawn ", argv[0]) ;
   }
@@ -64,8 +72,46 @@ int main (int argc, char const **argv, char const *const *envp)
     strerr_dief2x(wait_estatus(wstat), "child failed wth exit code ", fmt) ;
   }
 
-  if (gid) if (setgid(gid) == -1) strerr_diefu2sys(111, "setgid to ", "user") ;
-  if (uid) if (setuid(uid) == -1) strerr_diefu2sys(111, "setuid to ", "user") ;
+  if (gid) if (setgid(gid) == -1) strerr_diefu4sys(111, "set", "g", "id to ", "user") ;
+  if (uid) if (setuid(uid) == -1) strerr_diefu4sys(111, "set", "u", "id to ", "user") ;
 
-  xexec_e(argv + argc1 + 1, envp) ;
+  m = 0 ;
+  if (gid)
+  {
+    struct group *gr = getgrgid(gid) ;
+    memcpy(fmt + m, "CONTAINER_GID=", 14) ; m += 14 ;
+    m += gid_fmt(fmt + m, gid) ;
+    fmt[m++] = 0 ; n++ ;
+    if (gr)
+    {
+      size_t rlen = strlen(gr->gr_name)  + 1 ;
+      memcpy(fmt + m, "CONTAINER_GROUP=", 16) ; m += 16 ;
+      if (rlen > MAXGROUPLEN)
+      {
+        errno = ENAMETOOLONG ;
+        strerr_diefu4sys(111, "fill CONTAINER_", "GROUP", " environment variable with value ", gr->gr_name) ;
+      }
+      memcpy(fmt + m, gr->gr_name, rlen) ; m += rlen ; n++ ;
+    }
+  }
+  if (uid)
+  {
+    struct passwd *pw = getpwuid(uid) ;
+    memcpy(fmt + m, "CONTAINER_UID=", 14) ; m += 14 ;
+    m += uid_fmt(fmt + m, uid) ;
+    fmt[m++] = 0 ; n++ ;
+    if (pw)
+    {
+      size_t rlen = strlen(pw->pw_name)  + 1 ;
+      memcpy(fmt + m, "CONTAINER_USER=", 15) ; m += 15 ;
+      if (rlen > MAXUSERLEN)
+      {
+        errno = ENAMETOOLONG ;
+        strerr_diefu4sys(111, "fill CONTAINER_", "USER", " environment variable with value ", pw->pw_name) ;
+      }
+      memcpy(fmt + m, pw->pw_name, rlen) ; m += rlen ; n++ ;
+    }
+  }
+
+  xmexec_en(argv + argc1 + 1, envp, fmt, m, n) ;
 }
