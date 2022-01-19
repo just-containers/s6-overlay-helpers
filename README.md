@@ -55,7 +55,7 @@ This is used in [s6-overlay](https://github.com/just-containers/s6-overlay)
 to make sure that a portion of the filesystem hierarchy always exists and
 is owned by the current user.
 
-This binary needs the _suid_ bit enabled so it can gain privileges to
+This binary needs the *suid* bit enabled so it can gain privileges to
 execute its argument as root. Since it can only be run as part of the pid 1
 process chain, it does not endanger the security of the system; nevertheless,
 please audit the code until you have full confidence that it is secure.
