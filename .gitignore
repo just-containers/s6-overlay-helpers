@@ -5,5 +5,4 @@
 *.so.*
 /config.mak
 /src/include/s6-overlay-helpers/config.h
-/justc-envdir
 /s6-overlay-suexec
