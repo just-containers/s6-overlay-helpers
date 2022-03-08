@@ -3,7 +3,7 @@ Changelog for s6-overlay-helpers.
 In 0.1.0.0
 ----------
 
- - justc-envdir removed. (Obsoleted by s6-envdir -Lfn)
+ - justc-envdir removed. (Obsoleted by s6-envdir -Lf)
 
 
 In 0.0.1.0
