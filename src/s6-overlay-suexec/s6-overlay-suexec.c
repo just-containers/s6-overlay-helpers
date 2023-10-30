@@ -1,9 +1,7 @@
 /* ISC license. */
 
 /* for setresuid/setresgid */
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
+#include <skalibs/nonposix.h>
 
 #include <unistd.h>
 #include <sys/wait.h>
@@ -88,8 +86,8 @@ int main (int argc, char const **argv, char const *const *envp)
   m = 0 ;
   if (!euid)
   {
-    if (gid) if (setgid(gid) == -1) strerr_diefu4sys(111, "set", "g", "id to ", "user") ;
-    if (uid) if (setuid(uid) == -1) strerr_diefu4sys(111, "set", "u", "id to ", "user") ;
+    if (gid) if (setgid(gid) == -1) strerr_diefu3sys(111, "set", "g", "id to user") ;
+    if (uid) if (setuid(uid) == -1) strerr_diefu3sys(111, "set", "u", "id to user") ;
     if (gid)
     {
       struct group *gr = getgrgid(gid) ;

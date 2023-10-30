@@ -1,5 +1,10 @@
 Changelog for s6-overlay-helpers.
 
+In 0.1.0.2
+----------
+
+ - Adaptation to skalibs-2.14.0.0.
+
 In 0.1.0.1
 ----------
 
