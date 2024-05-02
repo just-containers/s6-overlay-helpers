@@ -6,3 +6,4 @@
 /config.mak
 /src/include/s6-overlay-helpers/config.h
 /s6-overlay-suexec
+/s6-overlay-stat

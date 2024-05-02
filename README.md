@@ -37,3 +37,16 @@ please audit the code until you have full confidence that it is secure.
 In an execline script: `s6-overlay-suexec { root_block... } normal_init...`
 
 On the command line: `s6-overlay-suexec root_block... '' normal_init...`
+
+# s6-overlay-stat
+
+A simple utility that prints the uid and gid (and user and group, if available
+in `/etc/passwd` and `/etc/group`) of a file given as argument. The output
+is suitable for setting the `uid`, `gid`, `user` and `group` variables for
+the rest of the script.
+
+## Usage
+
+In an execline script: `pipeline { s6-overlay-stat file } envfile - prog...`
+
+In a shell script: `` eval `s6-overlay-stat file` ``
