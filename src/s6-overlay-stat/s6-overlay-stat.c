@@ -14,6 +14,13 @@
 
 #define USAGE "s6-overlay-stat path"
 
+static void print_perms (buffer *b, mode_t mode)
+{
+  static char const *perms = "oxoworgxgwgruxuwurosgsus" ;
+  for (unsigned int i = 0 ; i < 12 ; i++)
+    if (mode & (1 << i)) buffer_put(b, perms + (i << 1), 2) ;
+}
+
 static inline void dostat (char const *path)
 {
   struct passwd *pw ;
@@ -33,6 +40,8 @@ static inline void dostat (char const *path)
   buffer_put(buffer_1, fmtg, gid_fmt(fmtg, st.st_gid)) ;
   buffer_put(buffer_1, "\ngroup=", 7) ;
   if (gr) buffer_puts(buffer_1, gr->gr_name) ;
+  buffer_put(buffer_1, "\nperms=", 7) ;
+  print_perms(buffer_1, st.st_mode) ;
   if (!buffer_putflush(buffer_1, "\n", 1))
     strerr_diefu1sys(111, "write to stdout") ;
 }

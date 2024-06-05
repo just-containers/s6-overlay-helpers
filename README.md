@@ -42,7 +42,7 @@ On the command line: `s6-overlay-suexec root_block... '' normal_init...`
 
 A simple utility that prints the uid and gid (and user and group, if available
 in `/etc/passwd` and `/etc/group`) of a file given as argument. The output
-is suitable for setting the `uid`, `gid`, `user` and `group` variables for
+is suitable for setting the `uid`, `gid`, `user`, `group` and `perms` variables for
 the rest of the script.
 
 ## Usage
