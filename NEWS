@@ -1,5 +1,11 @@
 Changelog for s6-overlay-helpers.
 
+In 0.1.2.0
+----------
+
+ - pkg-config support.
+
+
 In 0.1.1.0
 ----------
 
