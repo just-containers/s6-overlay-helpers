@@ -50,3 +50,4 @@ the rest of the script.
 In an execline script: `pipeline { s6-overlay-stat file } envfile - prog...`
 
 In a shell script: `` eval `s6-overlay-stat file` ``
+
