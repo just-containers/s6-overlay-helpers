@@ -1,5 +1,12 @@
 Changelog for s6-overlay-helpers.
 
+In 0.1.2.2
+----------
+
+ - Support for disabling rpath at configure time.
+ - Adaptation to skalibs-2.15.0.0.
+
+
 In 0.1.2.1
 ----------
 
